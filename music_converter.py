@@ -1,10 +1,17 @@
+from pydub import AudioSegment
+import magic
 import os
-import soundfile as sf
 
 main_folder = os.listdir()
+
+def rewrite_as_mp3(input, output):
+    AudioSegment.from_file(input).export(output, format="mp3")
+
+
 for file_name in main_folder:
-    if file_name.endswith('.mp3'):
-        data, samplerate = sf.read(file_name)
-        sf.write(file_name[:-4] + ".wav", data, samplerate, format='WAV')
-    else:
-        print(file_name, "is not mp3, so i cant convert")
+    if os.path.isdir(file_name) == False:
+        file_without_endswitch = (os.path.splitext(file_name)[0]+'.mp3')
+        file_format = magic.from_file(file_name, mime=True)
+        if file_format == 'audio/x-m4a':
+            rewrite_as_mp3(file_name, file_without_endswitch)
+            print("----> ",file_name ,"converted to", file_without_endswitch)
